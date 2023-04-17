@@ -1,0 +1,61 @@
+Container Execution Environment
+  1. Kernel version
+     uname -r
+
+  2. Kernel update date
+     uname -a
+
+  3. Number of Capabilities
+     Step 1 
+     cat /proc/1/status | grep Cap
+     
+     Step 2
+     Copy the <hex>
+     
+     Step 3
+     capsh –decode=<hex>
+     
+  4. Seccomp
+     Step 1
+     ps
+     
+     Step 2
+     Copy the <pid>
+     
+     Step 3
+     grep Seccomp /proc/<pid>/status
+     
+     ** Check all processes
+     
+  5. MAC
+     Step 1
+     sudo getenforce
+     
+     Step 2
+     sudo aa-status
+  
+  6. KASLR
+     sudo head -n 3 /proc/kallsyms
+  
+  7. SMEP
+     cat /proc/cpuinfo | grep smep
+     
+  8. SMAP
+     cat /proc/cpuinfo | grep smap
+
+Privilege Escalation Attack
+  1. Access dmesg log file
+     cd /var/log
+  
+  2. Access /proc/kallsyms
+     sudo head -n 3 /proc/kallsyms
+
+Container Escaping Attack
+  1. Access header files
+     cd /usr/include
+  
+  2. Access Vermagic value
+     sudo modinfo netlink_diag
+  
+  3. CRC values
+     grep _kcrctab_ /proc/kallsyms
