@@ -54,7 +54,7 @@ Privilege Escalation Attack
      ls
   
   2. Access /proc/kallsyms
-     sudo head -n 3 /proc/kallsyms
+     head -n 3 /proc/kallsyms
 
 Container Escaping Attack
   1. Access header files
