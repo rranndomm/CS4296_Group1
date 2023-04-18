@@ -10,10 +10,12 @@ Container Execution Environment
      cat /proc/1/status | grep Cap
      
      Step 2
-     Copy the <hex>
+     Copy the <hex> of CapEff
+     
+     ** example of <hex>: 0000003fffffffff
      
      Step 3
-     capsh –decode=<hex>
+     capsh --decode=<hex>
      
   4. Seccomp
      Step 1
@@ -45,14 +47,22 @@ Container Execution Environment
 
 Privilege Escalation Attack
   1. Access dmesg log file
+     Step 1
      cd /var/log
+     
+     Step 2
+     ls
   
   2. Access /proc/kallsyms
      sudo head -n 3 /proc/kallsyms
 
 Container Escaping Attack
   1. Access header files
+     Step 1
      cd /usr/include
+     
+     Step 2
+     ls
   
   2. Access Vermagic value
      sudo modinfo netlink_diag
