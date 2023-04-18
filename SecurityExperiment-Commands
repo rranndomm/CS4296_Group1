@@ -17,17 +17,8 @@ Container Execution Environment
      Step 3
      capsh --decode=<hex>
      
-  4. Seccomp
-     Step 1
-     ps
-     
-     Step 2
-     Copy the <pid>
-     
-     Step 3
-     grep Seccomp /proc/<pid>/status
-     
-     ** Check all processes
+  4. Seccomp 
+     grep Seccomp /proc/1/status
      
   5. MAC
      Step 1
