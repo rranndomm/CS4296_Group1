@@ -1,0 +1,117 @@
+#Hibench setup
+
+#Java
+sudo apt update
+sudo apt install default-jre
+sudo apt install openjdk-8-jre-headless
+sudo apt install openjdk-8-jdk
+sudo apt-get install openjdk-8-jre
+sudo update-alternatives --config java
+# choose 2
+#check the version of JAVA
+java -version
+
+#Hadoop
+wget -c -O hadoop.tar.gz http://www-eu.apache.org/dist/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz
+sudo mkdir /usr/local/hadoop
+sudo tar -xzvf hadoop.tar.gz
+sudo mv hadoop-3.2.4/* /usr/local/hadoop
+
+#to see the home of java
+readlink -f /usr/bin/java | sed "s:bin/java::"
+
+nano /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+#add this in the hadoop-env.sh file
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+
+nano .bashrc
+#add the following path to the .bashrc path
+export HADOOP_HOME=/usr/local/hadoop/
+
+#Check the hadoop can run or not
+/usr/local/hadoop/bin/hadoop
+
+# testing and verify the hadoop
+
+sudo mkdir ~/input
+cp /usr/local/hadoop/etc/hadoop/*.xml ~/input
+
+/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.4.jar grep ~/input ~/grep_example 'allowed[.]*'
+
+#Scala 
+wget https://downloads.lightbend.com/scala/2.12.10/scala-2.12.10.tgz
+tar xvf scala-2.12.10.tgz
+sudo mkdir /usr/local/scala
+
+sudo mv scala-2.12.10/* /usr/local/scala
+sudo chmod -R 777 /usr/local/scala/
+
+nano ~/.bashrc
+#Add these two path to the .bashrc
+export SCALA_HOME=/usr/local/scala/
+export PATH=$PATH:$SCALA_HOME/bin
+
+#Spark
+
+wget https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz
+
+tar xvf spark-3.1.1-bin-hadoop3.2.tgz
+
+sudo mkdir /usr/local/spark/
+
+sudo mv spark-3.1.1-bin-hadoop3.2/* /usr/local/spark
+
+nano ~/.bashrc
+export PATH=$PATH:/usr/local/spark/bin
+
+source .bashrc
+#try to run spark and check whether it is working or not
+spark-shell
+
+#Hibench
+sudo apt-get install bc
+
+git clone https://github.com/Intel-bigdata/HiBench.git
+cd HiBench
+sudo apt-get install -y git maven
+
+#change all the {spark.version} in these pom.xml file to 3.1.1
+
+nano ~/HiBench/autogen/pom.xml
+nano ~/HiBench/sparkbench/common/pom.xml
+nano ~/HiBench/sparkbench/micro/pom.xml
+nano ~/HiBench/sparkbench/ml/pom.xml
+nano ~/HiBench/sparkbench/websearch/pom.xml
+nano ~/HiBench/sparkbench/graph/pom.xml
+nano ~/HiBench/sparkbench/sql/pom.xml
+
+#build all including hadoopbench and sparkbench
+mvn -Dspark=3.1.1 -Dscala=2.12 clean package
+
+# use hibench
+
+cd
+cd HiBench/conf
+#Change the configuration of hibench, we can choose tiny,medium or large for the input data #size
+nano hibench.conf
+# Change the list of workloads for benchmarking
+nano benchmarks.lst
+#Choose spark or hadoop to use
+nano frameworks.lst
+
+cp spark.conf.template spark.conf
+
+ll spark.conf
+nano spark.conf
+#copy this path for Hibench to map the home path of spark
+/usr/local/spark/bin
+
+#change the data size for workloads
+nano workloads/ml/kmeans.conf
+
+nano workloads/websearch/pagerank.conf
+#For all workloads,
+$<HiBench_Root>/bin/run-all.sh
+
+#The report of the workload test runs is then added to 'hibench-report' file inside the
+/<HiBench_Root>/report directory
