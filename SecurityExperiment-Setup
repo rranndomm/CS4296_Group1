@@ -1,0 +1,168 @@
+|Setup of Amazon ECS|
+Step 1: Go to IAM  -> Roles -> Create role
+- Choose custom trust policy
+- Replace all with:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+Step 2: Click next
+
+Step 3: Create policy
+- Choose JSON
+- Replace all with:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:us-east-1:<account id>:log-group:/aws/ecs/test:*"
+        }
+    ]
+}
+- Name: test
+
+Step 4: Click next to input policy name: test
+
+Step 5: Go back to add permission
+- Add policy “test”
+
+Step 6: Click next to input role name: test
+
+Step 7: Go to ECS -> Task Definitions 
+
+Step 8: Create new task definition
+- Task definition family: test
+- Container name: test
+- Image URI: public.ecr.aws/docker/library/httpd:latest
+
+Step 9: Click next
+- App environment: AWS Fargate
+- Task role: test
+
+Step 10: Click create
+
+Step 11: Go to Cluster -> create cluster
+- Name: test
+- Others in default
+
+Step 12: Go to Task Definitions -> task definition “test”
+
+Step 13: Deploy -> create service
+- Existing cluster: test
+- Service name: test
+- Others in default
+
+Step 14: Click create
+
+Step 15: Wait until the service is deployed
+
+Step 16: Go to service “test” -> Configuration and tasks
+- Copy task id e.g. 9cf17c9a28dc4075a1c4cab78588a3c6
+
+Step 17: Go to terminal 
+- Run command: 
+aws ecs update-service --cluster test  --task-definition test --service test --enable-execute-command --force-new-deployment
+- Run command:
+aws ecs execute-command --cluster test --task <task id> --container test --interactive --command "/bin/sh"
+
+Step 18: Start experiment 
+
+Step 19: Delete cluster, task definition after experiment
+
+|Setup of Google GKE|
+Step 1: Create a new project 
+
+Step 2: Enable Kubernetes Engine API
+
+Step 3: Create cluster on Kubernetes Engine
+- In Autopilot mode
+- Name field: test
+- Region field: us-central1
+- Others in default
+
+Step 4: Click Create
+
+Step 5: Open Cloud Shell 
+
+Step 6: Clone sample app
+- Run command: 
+git clone \
+    https://github.com/GoogleCloudPlatform/microservices-demo.git
+
+Step 7: Open the dictionary
+- Run command:
+cloudshell workspace \
+    microservices-demo
+
+Step 8: Wait until the cluster is ready
+
+Step 9: Click View -> Command Platte 
+- Type in “add a cluster to the kubeconfig”
+- Select google kubutete engine
+- Select cluster “test”
+
+Step 10: Click Terminal -> New Terminal
+- Run command:
+kubectl apply -f \
+    ./release/kubernetes-manifests.yaml
+
+Step 11: Start the experiment
+
+Step 12: Delete the cluster after experiment
+
+|Setup of Azure ACI|
+Step 1: Go to Container Instances 
+
+Step 2: Create container instance 
+- Create new resources group: test
+- Container name: test
+- Region: East US
+- Image source: quickstart image
+- Image: mcr.microsoft.com/azuredocs/aci-helloworld:latest (Linux)
+- Others in default
+	
+Step 3: Click Review + create
+
+Step 4: Click Create
+
+Step 5: Wait until the container is set
+
+Step 6: Go to resource
+
+Step 7: Click Containers -> Connect -> as /bin/sh
+
+Step 8: Start the experiment
+
+Step 9: Delete the container instance after experiment
